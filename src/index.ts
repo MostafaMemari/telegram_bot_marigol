@@ -51,7 +51,9 @@ async function processFreeProducts(): Promise<void> {
   }
 }
 
-cron.schedule("*/30 * * * *", () => {
+console.log(process.env.CRON_SCHEDULE);
+
+cron.schedule(process.env.CRON_SCHEDULE || "*/30 * * * *", () => {
   processFreeProducts();
 });
 

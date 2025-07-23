@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/kalorair/bot_telegram_marigol
+    - cp -r * $DEPLOYPATH
