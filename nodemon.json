@@ -1,0 +1,5 @@
+{
+  "watch": ["src"],
+  "ignore": ["src/jobs.json"],
+  "ext": "ts,js,json"
+}
