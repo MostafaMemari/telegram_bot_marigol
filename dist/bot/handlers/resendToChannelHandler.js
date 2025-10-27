@@ -9,7 +9,6 @@ async function resendToChannelHandler(ctx) {
     try {
         const data = ctx.callbackQuery?.data;
         const [_, __, productId, channel] = data?.split("_") || [];
-        console.log(productId, channel);
         await ctx.answerCallbackQuery();
         const product = await (0, wordpressService_1.getProductById)(productId);
         if (!product) {

@@ -9,10 +9,9 @@ async function sendToTelegramChannel(productId, channelKey) {
     const product = await (0, wordpressService_1.getProductById)(productId);
     if (!product)
         return console.error("❌ محصول پیدا نشد.");
+    await (0, wordpressService_1.publishProduct)(productId);
     const formatted = (0, productFormatter_1.formatProduct)(product);
-    const keyboard = {
-        inline_keyboard: [[{ text: "📥 دریافت از سایت", url: "https://marigol.ir" }]],
-    };
+    const keyboard = { inline_keyboard: [[{ text: "📥 دریافت از سایت", url: "https://marigol.ir" }]] };
     if (formatted.photoUrl) {
         await __1.bot.api.sendPhoto(channelKey, formatted.photoUrl, { caption: formatted.msg, parse_mode: "HTML", reply_markup: keyboard });
     }

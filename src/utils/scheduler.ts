@@ -48,23 +48,3 @@ export function removeJob(jobId: number) {
   const jobs = readJobs().filter((j: any) => j.id !== jobId);
   saveJobs(jobs);
 }
-
-export function restoreJobs() {
-  const jobs = readJobs();
-  const now = new Date();
-
-  for (const job of jobs) {
-    const jobTime = new Date(job.date);
-    if (jobTime > now) {
-      schedule.scheduleJob(job.id.toString(), jobTime, async () => {
-        console.log(`♻️ اجرای دوباره ${job.productId} برای کانال ${job.channelName} (${job.channelId})`);
-        await sendToTelegramChannel(job.productId, job.channelId);
-        removeJob(job.id);
-      });
-    } else {
-      removeJob(job.id);
-    }
-  }
-
-  console.log(`✅ ${jobs.length} زمان‌بندی بازگردانی شد.`);
-}

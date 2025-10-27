@@ -9,8 +9,6 @@ export async function resendToChannelHandler(ctx: Context) {
 
     const [_, __, productId, channel] = data?.split("_") || [];
 
-    console.log(productId, channel);
-
     await ctx.answerCallbackQuery();
 
     const product = await getProductById(productId);

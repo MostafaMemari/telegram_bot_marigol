@@ -22,7 +22,7 @@ const showJobHandler_1 = require("./handlers/jobs/showJobHandler");
 const authMiddleware_1 = require("./middlewares/authMiddleware");
 const sessionMiddleware_1 = require("./middlewares/sessionMiddleware");
 const customTimeMessageHandler_1 = require("./handlers/customTimeMessageHandler");
-const customTimeCallbackHandler_1 = require("./handlers/customTimeCallbackHandler"); // ✅ اینو اضافه کردیم
+const customTimeCallbackHandler_1 = require("./handlers/customTimeCallbackHandler");
 const customChannelHandler_1 = require("./handlers/customChannelHandler");
 const cancelCustomTimeHandler_1 = require("./handlers/cancelCustomTimeHandler");
 const express_1 = __importDefault(require("express"));
@@ -70,7 +70,6 @@ exports.bot.callbackQuery(/^unmark_sent_\d+$/, sendStatusHandler_1.unmarkSentHan
 exports.bot.callbackQuery(/^custom_time_/, customTimeCallbackHandler_1.customTimeCallbackHandler);
 exports.bot.callbackQuery(/^custom_channel_/, customChannelHandler_1.customChannelHandler);
 exports.bot.callbackQuery(/^cancel_custom_time_\d+$/, cancelCustomTimeHandler_1.cancelCustomTimeHandler);
-// Deployment mode: polling vs webhook
 const MODE = process.env.NODE_ENV || "development";
 const PORT = Number(process.env.PORT) || 3000;
 if (MODE === "production") {
@@ -78,9 +77,10 @@ if (MODE === "production") {
     const app = (0, express_1.default)();
     app.use(express_1.default.json());
     const secretToken = process.env.BOT_SECRET || "";
-    app.use((0, grammy_1.webhookCallback)(exports.bot, "express", { secretToken }));
+    // مسیر امن برای webhook
+    app.use("/bot-webhook", (0, grammy_1.webhookCallback)(exports.bot, "express", { secretToken }));
     app.listen(PORT, () => {
-        console.log(`🌐 Webhook server running on port ${PORT}`);
+        console.log(`🌐 Webhook server running at https://kalora.ir/bot-webhook`);
         console.log(`🤖 Telegram bot webhook active`);
     });
 }

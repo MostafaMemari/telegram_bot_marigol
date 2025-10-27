@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.readJobs = readJobs;
 exports.addJob = addJob;
 exports.removeJob = removeJob;
-exports.restoreJobs = restoreJobs;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
@@ -42,22 +41,4 @@ function addJob(job) {
 function removeJob(jobId) {
     const jobs = readJobs().filter((j) => j.id !== jobId);
     saveJobs(jobs);
-}
-function restoreJobs() {
-    const jobs = readJobs();
-    const now = new Date();
-    for (const job of jobs) {
-        const jobTime = new Date(job.date);
-        if (jobTime > now) {
-            node_schedule_1.default.scheduleJob(job.id.toString(), jobTime, async () => {
-                console.log(`♻️ اجرای دوباره ${job.productId} برای کانال ${job.channelName} (${job.channelId})`);
-                await (0, sendToTelegramChannel_1.sendToTelegramChannel)(job.productId, job.channelId);
-                removeJob(job.id);
-            });
-        }
-        else {
-            removeJob(job.id);
-        }
-    }
-    console.log(`✅ ${jobs.length} زمان‌بندی بازگردانی شد.`);
 }

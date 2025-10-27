@@ -9,7 +9,6 @@ import { publishedHandler } from "./handlers/publishedHandler";
 import { productDetailsHandler } from "./handlers/productDetailsHandler";
 import { downloadFileHandler } from "./handlers/downloadFileHandler";
 import { resendToChannelHandler } from "./handlers/resendToChannelHandler";
-import { restoreJobs } from "../utils/scheduler";
 import { chooseChannelHandler } from "./handlers/chooseChannelHandler";
 import { scheduleHandler } from "./handlers/scheduleHandler";
 import { jobsHandler } from "./handlers/jobs/jobsHandler";
@@ -18,7 +17,7 @@ import { showJobHandler } from "./handlers/jobs/showJobHandler";
 import { authMiddleware } from "./middlewares/authMiddleware";
 import { sessionMiddleware } from "./middlewares/sessionMiddleware";
 import { customTimeMessageHandler } from "./handlers/customTimeMessageHandler";
-import { customTimeCallbackHandler } from "./handlers/customTimeCallbackHandler"; // ✅ اینو اضافه کردیم
+import { customTimeCallbackHandler } from "./handlers/customTimeCallbackHandler";
 import { customChannelHandler } from "./handlers/customChannelHandler";
 import { cancelCustomTimeHandler } from "./handlers/cancelCustomTimeHandler";
 import express from "express";
@@ -79,7 +78,6 @@ bot.callbackQuery(/^custom_time_/, customTimeCallbackHandler);
 bot.callbackQuery(/^custom_channel_/, customChannelHandler);
 bot.callbackQuery(/^cancel_custom_time_\d+$/, cancelCustomTimeHandler);
 
-// Deployment mode: polling vs webhook
 const MODE = process.env.NODE_ENV || "development";
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -90,10 +88,11 @@ if (MODE === "production") {
 
   const secretToken = process.env.BOT_SECRET || "";
 
-  app.use(webhookCallback(bot, "express", { secretToken }));
+  // مسیر امن برای webhook
+  app.use("/bot-webhook", webhookCallback(bot, "express", { secretToken }));
 
   app.listen(PORT, () => {
-    console.log(`🌐 Webhook server running on port ${PORT}`);
+    console.log(`🌐 Webhook server running at https://kalora.ir/bot-webhook`);
     console.log(`🤖 Telegram bot webhook active`);
   });
 } else {
