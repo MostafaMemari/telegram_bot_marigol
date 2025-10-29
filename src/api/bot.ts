@@ -2,7 +2,6 @@ import { Bot, Context, SessionFlavor, webhookCallback } from "grammy";
 import dotenv from "dotenv";
 import { Keyboard } from "grammy";
 
-import { draftsHandler } from "../bot/handlers/draftsHandler";
 import { showTimeSlotsHandler } from "../bot/handlers/showTimeSlotsHandler";
 import { backToPublishHandler } from "../bot/handlers/backToPublishHandler";
 import { markSentHandler, resendHandler, unmarkSentHandler } from "../bot/handlers/sendStatusHandler";
@@ -21,6 +20,7 @@ import { customTimeMessageHandler } from "../bot/handlers/customTimeMessageHandl
 import { customTimeCallbackHandler } from "../bot/handlers/customTimeCallbackHandler";
 import { customChannelHandler } from "../bot/handlers/customChannelHandler";
 import { cancelCustomTimeHandler } from "../bot/handlers/cancelCustomTimeHandler";
+import { draftsHandler } from "../bot/handlers/draftsHandler";
 
 dotenv.config();
 

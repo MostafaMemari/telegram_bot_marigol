@@ -1,6 +1,6 @@
 import { Context } from "grammy";
-import { addJob } from "../../utils/scheduler";
 import { getProductById } from "../../services/wordpressService";
+import { addJob } from "../../utils/scheduler";
 
 export async function scheduleHandler(ctx: Context) {
   try {

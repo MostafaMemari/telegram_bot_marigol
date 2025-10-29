@@ -1,6 +1,6 @@
 import { Context } from "grammy";
-import { sendProductFile } from "../../handlers/downloadFileHandler";
 import { getProductById } from "../../services/wordpressService";
+import { sendProductFile } from "../../handlers/downloadFileHandler";
 
 export async function downloadFileHandler(ctx: Context) {
   if (!ctx.callbackQuery?.data) return;
