@@ -1,7 +1,7 @@
 import { addJob } from "../../utils/scheduler";
 import { getProductById } from "../../services/wordpressService";
 import { InlineKeyboard } from "grammy";
-import { MyContext } from "..";
+import { MyContext } from "../../api/bot";
 
 export async function customTimeMessageHandler(ctx: MyContext) {
   if (!ctx.session.waitingForCustomTime) return;

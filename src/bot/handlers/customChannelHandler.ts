@@ -1,5 +1,5 @@
 import { InlineKeyboard } from "grammy";
-import { MyContext } from "..";
+import { MyContext } from "../../api/bot";
 
 export async function customChannelHandler(ctx: MyContext) {
   const data = ctx.callbackQuery?.data;

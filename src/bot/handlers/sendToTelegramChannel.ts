@@ -1,4 +1,4 @@
-import { bot } from "..";
+import { bot } from "../../api/bot";
 import { sendProductFile } from "../../handlers/downloadFileHandler";
 import { formatProduct } from "../../handlers/productFormatter";
 import { getProductById, markAsSent, publishProduct } from "../../services/wordpressService";

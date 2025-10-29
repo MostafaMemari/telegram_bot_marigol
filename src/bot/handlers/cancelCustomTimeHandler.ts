@@ -1,4 +1,4 @@
-import { MyContext } from "..";
+import { MyContext } from "../../api/bot";
 
 export async function cancelCustomTimeHandler(ctx: MyContext) {
   if (!ctx.callbackQuery?.data) return;
