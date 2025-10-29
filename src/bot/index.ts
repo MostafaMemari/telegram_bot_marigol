@@ -77,14 +77,14 @@ bot.callbackQuery(/^cancel_custom_time_\d+$/, cancelCustomTimeHandler);
 const app = express();
 app.use(express.json());
 
+app.get("/", (req, res) => res.send("Bot is running!"));
+
 const secretToken = process.env.BOT_SECRET || "";
 app.use("/api/bot", webhookCallback(bot, "express", { secretToken }));
 
-// ✅ فقط در حالت لوکال polling فعال کن
 if (process.env.NODE_ENV !== "production") {
   bot.start();
   console.log("🤖 Bot running in POLLING mode (development)");
 }
 
-// ✅ برای Vercel باید اینو خروجی بدی
 export default app;
