@@ -1,5 +1,12 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "src/api/**/*.ts",
+      "use": "@vercel/node",
+      "config": { "maxLambdaSize": "50mb" }
+    }
+  ],
   "functions": {
     "src/api/bot.ts": {
       "memory": 1024,
