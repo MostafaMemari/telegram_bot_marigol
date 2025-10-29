@@ -1,3 +1,4 @@
+import express from "express";
 import { Bot, Keyboard, Context, SessionFlavor, webhookCallback } from "grammy";
 import dotenv from "dotenv";
 
@@ -20,7 +21,6 @@ import { customTimeMessageHandler } from "./handlers/customTimeMessageHandler";
 import { customTimeCallbackHandler } from "./handlers/customTimeCallbackHandler";
 import { customChannelHandler } from "./handlers/customChannelHandler";
 import { cancelCustomTimeHandler } from "./handlers/cancelCustomTimeHandler";
-import express from "express";
 
 dotenv.config();
 
@@ -31,18 +31,15 @@ interface SessionData {
 export type MyContext = Context & SessionFlavor<SessionData>;
 export const bot = new Bot<MyContext>(process.env.BOT_TOKEN!);
 
-// ✅ Middlewares
 bot.use(sessionMiddleware);
 bot.use(authMiddleware);
 
-// ✅ /start command
 bot.command("start", async (ctx) => {
   await ctx.reply("سلام! یکی از گزینه‌های زیر رو انتخاب کن:", {
     reply_markup: new Keyboard().text("📌 پیش‌نویس‌ها").text("🧾 همه محصولات").row().text("⏰ زمان‌بندی‌ها").resized().persistent(),
   });
 });
 
-// ✅ Text message handling
 bot.on("message:text", async (ctx) => {
   const text = ctx.message.text;
 
@@ -60,7 +57,6 @@ bot.on("message:text", async (ctx) => {
   }
 });
 
-// ✅ Callback queries
 bot.callbackQuery(/^select_time_/, showTimeSlotsHandler);
 bot.callbackQuery(/^schedule_/, scheduleHandler);
 bot.callbackQuery(/published_page_\d+/, publishedHandler);
@@ -78,22 +74,17 @@ bot.callbackQuery(/^custom_time_/, customTimeCallbackHandler);
 bot.callbackQuery(/^custom_channel_/, customChannelHandler);
 bot.callbackQuery(/^cancel_custom_time_\d+$/, cancelCustomTimeHandler);
 
-const MODE = process.env.NODE_ENV || "development";
-const PORT = Number(process.env.PORT) || 3000;
+const app = express();
+app.use(express.json());
 
-if (MODE === "production") {
-  const app = express();
-  app.use(express.json());
+const secretToken = process.env.BOT_SECRET || "";
+app.use("/api/bot", webhookCallback(bot, "express", { secretToken }));
 
-  const secretToken = process.env.BOT_SECRET || "";
-
-  app.use("/bot-webhook", webhookCallback(bot, "express", { secretToken }));
-
-  app.listen(PORT, () => {
-    console.log(`🌐 Webhook server running at https://kalora.ir/bot-webhook`);
-    console.log(`🤖 Telegram bot webhook active`);
-  });
-} else {
+// ✅ فقط در حالت لوکال polling فعال کن
+if (process.env.NODE_ENV !== "production") {
   bot.start();
   console.log("🤖 Bot running in POLLING mode (development)");
 }
+
+// ✅ برای Vercel باید اینو خروجی بدی
+export default app;
