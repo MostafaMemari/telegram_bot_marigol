@@ -82,13 +82,11 @@ const MODE = process.env.NODE_ENV || "development";
 const PORT = Number(process.env.PORT) || 3000;
 
 if (MODE === "production") {
-  // Webhook mode
   const app = express();
   app.use(express.json());
 
   const secretToken = process.env.BOT_SECRET || "";
 
-  // مسیر امن برای webhook
   app.use("/bot-webhook", webhookCallback(bot, "express", { secretToken }));
 
   app.listen(PORT, () => {
@@ -96,7 +94,6 @@ if (MODE === "production") {
     console.log(`🤖 Telegram bot webhook active`);
   });
 } else {
-  // Long polling mode (default)
   bot.start();
   console.log("🤖 Bot running in POLLING mode (development)");
 }

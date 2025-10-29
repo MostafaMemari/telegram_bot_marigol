@@ -9,7 +9,7 @@ export interface SessionData {
 export type MyContext = Context & SessionFlavor<SessionData>;
 
 const storage = new FileAdapter<SessionData>({
-  dirName: "tmp",
+  dirName: "/tmp/sessions",
 });
 
 export const sessionMiddleware = session({
