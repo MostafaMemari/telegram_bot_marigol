@@ -37,8 +37,19 @@ function addJob(job) {
         await (0, sendToTelegramChannel_1.sendToTelegramChannel)(job.productId, job.channelId);
         removeJob(jobId);
     });
+    console.log(`[scheduler] job ${jobId} scheduled for ${jobTime.toISOString()}`);
 }
 function removeJob(jobId) {
+    const idStr = jobId.toString();
+    const scheduled = node_schedule_1.default.scheduledJobs[idStr];
+    if (scheduled) {
+        scheduled.cancel();
+        console.log(`[scheduler] job ${idStr} cancelled`);
+    }
+    else {
+        console.log(`[scheduler] no job found with id ${idStr}`);
+    }
     const jobs = readJobs().filter((j) => j.id !== jobId);
     saveJobs(jobs);
+    console.log(`[jobs.json] job ${idStr} removed from file`);
 }

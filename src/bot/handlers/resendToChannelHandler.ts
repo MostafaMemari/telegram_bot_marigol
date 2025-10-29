@@ -19,7 +19,7 @@ export async function resendToChannelHandler(ctx: Context) {
 
     const formatted = formatProduct(product);
 
-    const keyboard = new InlineKeyboard().url("دریافت از سایت ⬇️", "https://marigol.ir");
+    const keyboard = new InlineKeyboard().url("دریافت از سایت ⬇️", `https://marigol.ir?p=${productId}`);
 
     if (formatted.photoUrl) {
       await ctx.api.sendPhoto(channel, formatted.photoUrl, { caption: formatted.msg, parse_mode: "HTML", reply_markup: keyboard });
