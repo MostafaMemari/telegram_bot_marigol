@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "cross-env NODE_ENV=production node dist/bot/index.js",
+    "build": "tsc",
     "dev": "cross-env NODE_ENV=development nodemon --watch src --exec ts-node src/api/bot.ts"
   },
   "keywords": [],
