@@ -1,4 +1,4 @@
-import { WP_APP_PASSWORD, WP_USER } from "../../config";
+import { WP_APP_PASSWORD, WP_USER } from "../config";
 import { Product } from "../types/wordpress";
 
 // دریافت محصولات در حالت پیش‌نویس
