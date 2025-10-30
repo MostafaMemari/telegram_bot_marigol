@@ -1,5 +1,3 @@
-import schedule from "node-schedule";
-import { sendToTelegramChannel } from "../bot/handlers/sendToTelegramChannel";
 import { channels } from "../constants/channels";
 import { JobModel } from "../model/job.model";
 
@@ -15,12 +13,6 @@ export async function addJob(job: {
   productDetails: string;
   channelId: string;
 }) {
-  const [hour, minute] = job.time.split(":").map(Number);
-  const now = new Date();
-  const jobTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
-
-  if (jobTime < now) jobTime.setDate(jobTime.getDate() + 1);
-
   const channelName = Object.keys(channels).find((key) => channels[key as keyof typeof channels] === job.channelId) || "unknown";
 
   const jobId = Date.now();
@@ -29,29 +21,9 @@ export async function addJob(job: {
     id: jobId,
     ...job,
     channelName,
-    date: jobTime,
+    date: new Date(),
   });
 
-  schedule.scheduleJob(jobId.toString(), jobTime, async () => {
-    await sendToTelegramChannel(job.productId, job.channelId);
-    await removeJob(jobId);
-  });
-
-  console.log(`[scheduler] job ${jobId} scheduled for ${jobTime.toISOString()}`);
+  console.log(`[scheduler] job ${jobId} added for ${job.time}`);
   return newJob;
-}
-
-export async function removeJob(jobId: number) {
-  const idStr = jobId.toString();
-
-  const scheduled = schedule.scheduledJobs[idStr];
-  if (scheduled) {
-    scheduled.cancel();
-    console.log(`[scheduler] job ${idStr} cancelled`);
-  } else {
-    console.log(`[scheduler] no job found with id ${idStr}`);
-  }
-
-  await JobModel.deleteOne({ id: jobId });
-  console.log(`[MongoDB] job ${idStr} removed`);
 }

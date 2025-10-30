@@ -17,13 +17,11 @@
     "ioredis": "^5.8.2",
     "mongoose": "^8.19.2",
     "node-fetch": "^3.3.2",
-    "node-schedule": "^2.1.1",
     "redis": "^5.9.0"
   },
   "devDependencies": {
     "@types/ioredis": "^4.28.10",
     "@types/node": "^24.9.1",
-    "@types/node-schedule": "^2.1.8",
     "cross-env": "^10.1.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
