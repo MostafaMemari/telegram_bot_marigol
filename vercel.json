@@ -11,6 +11,5 @@
       "src": "/api/(.*)",
       "dest": "api/bot.ts"
     }
-  ],
-  "crons": [{ "path": "/api/checkJobs", "schedule": "*/15 * * * *" }]
+  ]
 }
