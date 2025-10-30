@@ -8,31 +8,32 @@ export default async function handler(req: any, res: any) {
 
   try {
     const now = new Date();
-    const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000); // نیم ساعت قبل
+    const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
-    console.log(`\n[CRON CHECK] Now: ${now.toLocaleString()} | 30 min ago: ${thirtyMinutesAgo.toLocaleString()}`);
+    console.log(`\n[CRON CHECK] Now (UTC): ${now.toISOString()} | 30min ago: ${thirtyMinutesAgo.toISOString()}`);
 
     const jobs = await JobModel.find().lean();
     console.log(`[CRON CHECK] Found ${jobs.length} jobs in DB`);
 
     for (const job of jobs) {
       const [hour, minute] = job.time.split(":").map(Number);
-      const jobTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
 
-      console.log(`[JOB CHECK] Job ID: ${job._id} | Time: ${job.time} | JobTime: ${jobTime.toLocaleString()}`);
+      // تبدیل زمان ایران (UTC+3:30) به UTC
+      const jobTimeUTC = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour - 3, minute - 30, 0);
 
-      if (jobTime <= now && jobTime > thirtyMinutesAgo) {
-        console.log(`[JOB MATCH] ✅ Job ${job._id} is in range. Sending to channel...`);
+      console.log(`[JOB CHECK] Job ${job._id} | Time(IR): ${job.time} | JobTime(UTC): ${jobTimeUTC.toISOString()}`);
 
+      if (jobTimeUTC <= now && jobTimeUTC > thirtyMinutesAgo) {
+        console.log(`[JOB MATCH] ✅ Sending job ${job._id}...`);
         try {
           await sendToTelegramChannel(job.productId, job.channelId);
           await JobModel.deleteOne({ _id: job._id });
-          console.log(`[JOB DONE] ✅ Sent and deleted job ${job._id} scheduled at ${job.time}`);
+          console.log(`[JOB DONE] ✅ Sent & deleted job ${job._id}`);
         } catch (err: any) {
-          console.error(`[JOB ERROR] ❌ Error sending job ${job._id}:`, err.message);
+          console.error(`[JOB ERROR] ❌ ${job._id}: ${err.message}`);
         }
       } else {
-        console.log(`[JOB SKIP] ⏭ Job ${job._id} not in range. (jobTime=${jobTime.toISOString()}, now=${now.toISOString()})`);
+        console.log(`[JOB SKIP] ⏭ Not in range.`);
       }
     }
 
