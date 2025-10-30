@@ -8,6 +8,7 @@ export default async function handler(req: any, res: any) {
 
   try {
     const now = new Date();
+    const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
     const jobs = await JobModel.find().lean();
 
@@ -15,16 +16,16 @@ export default async function handler(req: any, res: any) {
       const [hour, minute] = job.time.split(":").map(Number);
       const jobTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
 
-      if (jobTime <= now) {
+      if (jobTime <= now && jobTime > thirtyMinutesAgo) {
         await sendToTelegramChannel(job.productId, job.channelId);
         await JobModel.deleteOne({ _id: job._id });
-        console.log(`[Job] Sent and deleted job ${job._id} scheduled at ${job.time}`);
+        console.log(`[Job] ✅ Sent and deleted job ${job._id} scheduled at ${job.time}`);
       }
     }
 
     res.status(200).json({ status: "ok", checked: jobs.length });
   } catch (err: any) {
-    console.error(err);
+    console.error("❌ Error in cron handler:", err);
     res.status(500).json({ status: "error", message: err.message });
   }
 }
