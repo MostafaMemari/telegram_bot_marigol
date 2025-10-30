@@ -27,3 +27,13 @@ export async function addJob(job: {
   console.log(`[scheduler] job ${jobId} added for ${job.time}`);
   return newJob;
 }
+
+export async function removeJob(jobId: number) {
+  const result = await JobModel.deleteOne({ id: jobId });
+  if (result.deletedCount > 0) {
+    console.log(`[scheduler] job ${jobId} removed`);
+  } else {
+    console.warn(`[scheduler] job ${jobId} not found`);
+  }
+  return result;
+}
