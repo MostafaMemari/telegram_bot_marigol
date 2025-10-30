@@ -6,7 +6,7 @@ export async function showJobHandler(ctx: Context) {
 
   const data = ctx.callbackQuery.data;
   const jobId = Number(data.split("_")[2]);
-  const jobs = readJobs();
+  const jobs = await readJobs();
   const job = jobs.find((j: any) => j.id === jobId);
   if (!job) return;
 

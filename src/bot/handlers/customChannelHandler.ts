@@ -4,7 +4,12 @@ import { MyContext } from "../../api/bot";
 export async function customChannelHandler(ctx: MyContext) {
   const data = ctx.callbackQuery?.data;
   if (!data) return;
-  await ctx.answerCallbackQuery();
+
+  try {
+    await ctx.answerCallbackQuery();
+  } catch (error) {
+    console.warn("⚠️ Callback query error (ignored):", error);
+  }
 
   const [_, __, productId, channelId] = data.split("_");
   ctx.session.waitingForCustomTime = { productId, channelId };

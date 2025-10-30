@@ -1,22 +1,13 @@
-import fs from "fs";
-import path from "path";
 import schedule from "node-schedule";
 import { sendToTelegramChannel } from "../bot/handlers/sendToTelegramChannel";
 import { channels } from "../constants/channels";
+import { JobModel } from "../model/job.model";
 
-const JOBS_FILE = path.join(__dirname, "../jobs.json");
-
-export function readJobs() {
-  if (!fs.existsSync(JOBS_FILE)) return [];
-  const data = fs.readFileSync(JOBS_FILE, "utf-8");
-  return data ? JSON.parse(data) : [];
+export async function readJobs() {
+  return await JobModel.find().lean();
 }
 
-function saveJobs(jobs: any[]) {
-  fs.writeFileSync(JOBS_FILE, JSON.stringify(jobs, null, 2), "utf-8");
-}
-
-export function addJob(job: {
+export async function addJob(job: {
   productId: string;
   time: string;
   chatId: number;
@@ -32,21 +23,25 @@ export function addJob(job: {
 
   const channelName = Object.keys(channels).find((key) => channels[key as keyof typeof channels] === job.channelId) || "unknown";
 
-  const jobs = readJobs();
   const jobId = Date.now();
-  const newJob = { id: jobId, ...job, channelName, date: jobTime.toISOString() };
-  jobs.push(newJob);
-  saveJobs(jobs);
+
+  const newJob = await JobModel.create({
+    id: jobId,
+    ...job,
+    channelName,
+    date: jobTime,
+  });
 
   schedule.scheduleJob(jobId.toString(), jobTime, async () => {
     await sendToTelegramChannel(job.productId, job.channelId);
-    removeJob(jobId);
+    await removeJob(jobId);
   });
 
   console.log(`[scheduler] job ${jobId} scheduled for ${jobTime.toISOString()}`);
+  return newJob;
 }
 
-export function removeJob(jobId: number) {
+export async function removeJob(jobId: number) {
   const idStr = jobId.toString();
 
   const scheduled = schedule.scheduledJobs[idStr];
@@ -57,7 +52,6 @@ export function removeJob(jobId: number) {
     console.log(`[scheduler] no job found with id ${idStr}`);
   }
 
-  const jobs = readJobs().filter((j: any) => j.id !== jobId);
-  saveJobs(jobs);
-  console.log(`[jobs.json] job ${idStr} removed from file`);
+  await JobModel.deleteOne({ id: jobId });
+  console.log(`[MongoDB] job ${idStr} removed`);
 }

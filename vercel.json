@@ -1,6 +1,7 @@
 {
   "functions": {
-    "src/api/bot.ts": {
+    "api/bot.ts": {
+      "runtime": "nodejs20.x",
       "memory": 1024,
       "maxDuration": 10
     }
@@ -8,7 +9,13 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "src/api/bot.ts"
+      "dest": "api/bot.ts"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/run-scheduler",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

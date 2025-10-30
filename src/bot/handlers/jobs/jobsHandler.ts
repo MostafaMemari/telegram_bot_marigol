@@ -2,7 +2,7 @@ import { Context, InlineKeyboard } from "grammy";
 import { readJobs } from "../../../utils/scheduler";
 
 export async function jobsHandler(ctx: Context) {
-  const jobs = readJobs();
+  const jobs = await readJobs();
   if (!jobs.length) {
     await ctx.reply("❌ هیچ زمان‌بندی فعالی وجود ندارد");
     return;

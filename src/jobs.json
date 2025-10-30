@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1761810065816,
+    "productId": "9355",
+    "time": "14:50",
+    "chatId": 107345794,
+    "messageId": 3247,
+    "productDetails": "{\"id\":9355,\"postTitle\":\"آبجکت تستی ورسل\",\"guid\":\"https://marigol.ir/?p=9355\",\"fileData\":false,\"mainImage\":\"\",\"sentToTelegram\":false,\"status\":\"draft\",\"tags\":[],\"categories\":[]}",
+    "channelId": "-1002300299273",
+    "channelName": "sketchup_object_material",
+    "date": "2025-10-30T11:20:00.000Z"
+  },
+  {
+    "id": 1761810385259,
+    "productId": "9355",
+    "time": "14:50",
+    "chatId": 107345794,
+    "messageId": 3250,
+    "productDetails": "{\"id\":9355,\"postTitle\":\"آبجکت تستی ورسل\",\"guid\":\"https://marigol.ir/?p=9355\",\"fileData\":false,\"mainImage\":\"\",\"sentToTelegram\":false,\"status\":\"draft\",\"tags\":[],\"categories\":[]}",
+    "channelId": "-1002300299273",
+    "channelName": "sketchup_object_material",
+    "date": "2025-10-30T11:20:00.000Z"
+  }
+]

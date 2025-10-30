@@ -1,5 +1,6 @@
 import { Bot, Context, SessionFlavor, webhookCallback } from "grammy";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import { Keyboard } from "grammy";
 
 import { showTimeSlotsHandler } from "../bot/handlers/showTimeSlotsHandler";
@@ -21,6 +22,7 @@ import { customTimeCallbackHandler } from "../bot/handlers/customTimeCallbackHan
 import { customChannelHandler } from "../bot/handlers/customChannelHandler";
 import { cancelCustomTimeHandler } from "../bot/handlers/cancelCustomTimeHandler";
 import { draftsHandler } from "../bot/handlers/draftsHandler";
+import { connectDB } from "../database/connect";
 
 dotenv.config();
 
@@ -30,23 +32,29 @@ if (!token) throw new Error("BOT_TOKEN is unset");
 interface SessionData {
   waitingForCustomTime?: { productId: string; channelId: string };
 }
-
 export type MyContext = Context & SessionFlavor<SessionData>;
 
 export const bot = new Bot<MyContext>(token);
 
+// 🧩 Error handler — جلوگیری از کرش کل برنامه
+bot.catch((err: any) => {
+  console.error("⚠️ Bot error handled:", err.error?.description || err);
+});
+
+// 🧩 Session + Auth middlewares
 bot.use(sessionMiddleware);
 bot.use(authMiddleware);
 
+// 🧩 Commands
 bot.command("start", async (ctx) => {
   await ctx.reply("سلام! یکی از گزینه‌های زیر رو انتخاب کن:", {
     reply_markup: new Keyboard().text("📌 پیش‌نویس‌ها").text("🧾 همه محصولات").row().text("⏰ زمان‌بندی‌ها").resized().persistent(),
   });
 });
 
+// 🧩 Message handler
 bot.on("message:text", async (ctx) => {
   const text = ctx.message.text;
-
   if (ctx.session.waitingForCustomTime) return await customTimeMessageHandler(ctx);
 
   switch (text) {
@@ -57,10 +65,11 @@ bot.on("message:text", async (ctx) => {
     case "⏰ زمان‌بندی‌ها":
       return jobsHandler(ctx);
     default:
-      await ctx.reply("لطفا یکی از گزینه‌های موجود رو انتخاب کن 🙏");
+      await ctx.reply("لطفاً یکی از گزینه‌های موجود رو انتخاب کن 🙏");
   }
 });
 
+// 🧩 Callback queries
 bot.callbackQuery(/^select_time_/, showTimeSlotsHandler);
 bot.callbackQuery(/^schedule_/, scheduleHandler);
 bot.callbackQuery(/published_page_\d+/, publishedHandler);
@@ -78,13 +87,27 @@ bot.callbackQuery(/^custom_time_/, customTimeCallbackHandler);
 bot.callbackQuery(/^custom_channel_/, customChannelHandler);
 bot.callbackQuery(/^cancel_custom_time_\d+$/, cancelCustomTimeHandler);
 
+// 🔧 Development mode (polling)
 const isDev = process.env.NODE_ENV === "development";
 
-if (isDev) {
-  console.log("🤖 Running in development mode with polling...");
-  bot.start();
+async function startBot() {
+  try {
+    await connectDB();
+
+    if (isDev) {
+      console.log("🤖 Running in development mode with polling...");
+      await bot.start();
+    } else {
+      console.log("🌍 Bot ready for production via webhook.");
+    }
+  } catch (err) {
+    console.error("❌ Failed to connect to MongoDB:", err);
+  }
 }
 
+startBot();
+
+// 🔧 Webhook handler for Vercel / Production
 export default async function handler(req: any, res: any) {
   if (isDev) {
     res.statusCode = 200;
