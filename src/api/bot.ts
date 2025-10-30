@@ -23,7 +23,6 @@ import { cancelCustomTimeHandler } from "../bot/handlers/cancelCustomTimeHandler
 import { draftsHandler } from "../bot/handlers/draftsHandler";
 import { connectDB } from "../database/connect";
 import { draftProductHandler } from "../bot/handlers/draftProductHandler";
-import { publishProduct } from "../services/wordpressService";
 import { publishProductHandler } from "../bot/handlers/publishProductHandler";
 
 dotenv.config();
@@ -38,23 +37,19 @@ export type MyContext = Context & SessionFlavor<SessionData>;
 
 export const bot = new Bot<MyContext>(token);
 
-// 🧩 Error handler — جلوگیری از کرش کل برنامه
 bot.catch((err: any) => {
   console.error("⚠️ Bot error handled:", err.error?.description || err);
 });
 
-// 🧩 Session + Auth middlewares
 bot.use(sessionMiddleware);
 bot.use(authMiddleware);
 
-// 🧩 Commands
 bot.command("start", async (ctx) => {
   await ctx.reply("سلام! یکی از گزینه‌های زیر رو انتخاب کن:", {
     reply_markup: new Keyboard().text("📌 پیش‌نویس‌ها").text("🧾 همه محصولات").row().text("⏰ زمان‌بندی‌ها").resized().persistent(),
   });
 });
 
-// 🧩 Message handler
 bot.on("message:text", async (ctx) => {
   const text = ctx.message.text;
   if (ctx.session.waitingForCustomTime) return await customTimeMessageHandler(ctx);
@@ -71,7 +66,6 @@ bot.on("message:text", async (ctx) => {
   }
 });
 
-// 🧩 Callback queries
 bot.callbackQuery(/^select_time_/, showTimeSlotsHandler);
 bot.callbackQuery(/^schedule_/, scheduleHandler);
 bot.callbackQuery(/published_page_\d+/, publishedProductsHandler);
@@ -93,7 +87,6 @@ bot.callbackQuery(/^custom_time_/, customTimeCallbackHandler);
 bot.callbackQuery(/^custom_channel_/, customChannelHandler);
 bot.callbackQuery(/^cancel_custom_time_\d+$/, cancelCustomTimeHandler);
 
-// 🔧 Development mode (polling)
 const isDev = process.env.NODE_ENV === "development";
 
 async function startBot() {
@@ -113,7 +106,6 @@ async function startBot() {
 
 startBot();
 
-// 🔧 Webhook handler for Vercel / Production
 export default async function handler(req: any, res: any) {
   if (isDev) {
     res.statusCode = 200;
