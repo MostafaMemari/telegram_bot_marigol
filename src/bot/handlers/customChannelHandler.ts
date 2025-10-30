@@ -16,7 +16,7 @@ export async function customChannelHandler(ctx: MyContext) {
 
   const keyboard = new InlineKeyboard().text("❌ لغو", `cancel_custom_time_${productId}`);
 
-  await ctx.reply("⏰ لطفا زمان دلخواه خود را وارد کنید (مثلاً 10:45)", {
+  await ctx.reply("⏰ زمان (HH:MM) را وارد کنید:", {
     reply_markup: keyboard,
   });
 }
