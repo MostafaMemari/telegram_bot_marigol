@@ -2,6 +2,7 @@ export interface Product {
   id: string;
   postTitle: string;
   guid: string;
+  status: "draft" | "publish";
   fileData: {
     [key: string]: {
       index: string;

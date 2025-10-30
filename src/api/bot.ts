@@ -1,12 +1,11 @@
 import { Bot, Context, SessionFlavor, webhookCallback } from "grammy";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 import { Keyboard } from "grammy";
 
 import { showTimeSlotsHandler } from "../bot/handlers/showTimeSlotsHandler";
 import { backToPublishHandler } from "../bot/handlers/backToPublishHandler";
 import { markSentHandler, resendHandler, unmarkSentHandler } from "../bot/handlers/sendStatusHandler";
-import { publishedHandler } from "../bot/handlers/publishedHandler";
+import { publishedProductsHandler } from "../bot/handlers/publishedProductsHandler";
 import { productDetailsHandler } from "../bot/handlers/productDetailsHandler";
 import { downloadFileHandler } from "../bot/handlers/downloadFileHandler";
 import { resendToChannelHandler } from "../bot/handlers/resendToChannelHandler";
@@ -23,6 +22,9 @@ import { customChannelHandler } from "../bot/handlers/customChannelHandler";
 import { cancelCustomTimeHandler } from "../bot/handlers/cancelCustomTimeHandler";
 import { draftsHandler } from "../bot/handlers/draftsHandler";
 import { connectDB } from "../database/connect";
+import { draftProductHandler } from "../bot/handlers/draftProductHandler";
+import { publishProduct } from "../services/wordpressService";
+import { publishProductHandler } from "../bot/handlers/publishProductHandler";
 
 dotenv.config();
 
@@ -61,7 +63,7 @@ bot.on("message:text", async (ctx) => {
     case "📌 پیش‌نویس‌ها":
       return draftsHandler(ctx);
     case "🧾 همه محصولات":
-      return publishedHandler(ctx);
+      return publishedProductsHandler(ctx);
     case "⏰ زمان‌بندی‌ها":
       return jobsHandler(ctx);
     default:
@@ -72,7 +74,11 @@ bot.on("message:text", async (ctx) => {
 // 🧩 Callback queries
 bot.callbackQuery(/^select_time_/, showTimeSlotsHandler);
 bot.callbackQuery(/^schedule_/, scheduleHandler);
-bot.callbackQuery(/published_page_\d+/, publishedHandler);
+bot.callbackQuery(/published_page_\d+/, publishedProductsHandler);
+
+bot.callbackQuery(/^draft_\d+$/, draftProductHandler);
+bot.callbackQuery(/^publish_\d+$/, publishProductHandler);
+
 bot.callbackQuery(/^product_\d+$/, productDetailsHandler);
 bot.callbackQuery(/^download_\d+$/, downloadFileHandler);
 bot.callbackQuery(/^remove_job_\d+$/, removeJobHandler);

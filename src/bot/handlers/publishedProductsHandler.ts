@@ -1,7 +1,7 @@
 import { Context, InlineKeyboard } from "grammy";
 import { getAllProducts } from "../../services/wordpressService";
 
-export async function publishedHandler(ctx: Context) {
+export async function publishedProductsHandler(ctx: Context) {
   if (ctx.callbackQuery) await ctx.answerCallbackQuery();
 
   let page = 1;
@@ -20,7 +20,11 @@ export async function publishedHandler(ctx: Context) {
     for (const p of products) {
       const words = p.postTitle.split(" ");
       const shortTitle = words.slice(0, 5).join(" ") + (words.length > 5 ? "..." : "");
-      keyboard.text(`${p.sentToTelegram ? "✅" : "❌"} ${p.id} - ${shortTitle}`, `product_${p.id}`).row();
+
+      const statusEmoji = p.status === "publish" ? "🟢" : "📝";
+      const sentEmoji = p.sentToTelegram ? "📬" : "📭";
+
+      keyboard.text(`${statusEmoji} ${sentEmoji} ${p.id} - ${shortTitle}`, `product_${p.id}`).row();
     }
 
     if (total_pages > 1) {

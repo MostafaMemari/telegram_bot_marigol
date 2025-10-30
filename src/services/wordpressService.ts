@@ -64,8 +64,35 @@ export async function publishProduct(productId: string): Promise<boolean> {
       return false;
     }
 
-    const data = await res.json();
-    console.log("✅ محصول منتشر شد:", data);
+    await res.json();
+    console.log("✅ محصول منتشر شد:");
+    return true;
+  } catch (err) {
+    console.error("🚨 خطای ارتباط با سرور:", err);
+    return false;
+  }
+}
+
+export async function draftProduct(productId: string): Promise<boolean> {
+  const auth = Buffer.from(`${WP_USER}:${WP_APP_PASSWORD}`).toString("base64");
+
+  try {
+    const res = await fetch(`https://marigol.ir/wp-json/wp/v2/downloads/${productId}`, {
+      method: "POST",
+      headers: {
+        Authorization: "Basic " + auth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: "draft" }),
+    });
+
+    if (!res.ok) {
+      console.error("❌ خطا در قرار دادن محصول در حالت پیش‌نویس:", res.status, await res.text());
+      return false;
+    }
+
+    await res.json();
+    console.log("📝 محصول به حالت پیش‌نویس درآمد:");
     return true;
   } catch (err) {
     console.error("🚨 خطای ارتباط با سرور:", err);

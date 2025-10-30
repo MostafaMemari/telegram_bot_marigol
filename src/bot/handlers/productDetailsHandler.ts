@@ -20,14 +20,17 @@ export async function productDetailsHandler(ctx: Context) {
     const formatted = formatProduct(product);
 
     const keyboard = new InlineKeyboard()
+      .text("📦 دریافت فایل", `download_${product.id}`)
+      .text("🔁 ارسال مجدد", `resend_${product.id}`)
       .text(
         product.sentToTelegram ? "❌ ریست وضعیت" : "✅ ارسال‌شده",
         product.sentToTelegram ? `unmark_sent_${product.id}` : `mark_sent_${product.id}`
       )
-      .text("📦 دریافت فایل", `download_${product.id}`)
-      .text("🔁 ارسال مجدد", `resend_${product.id}`);
-
-    keyboard.row().text("🔙 بازگشت به لیست", "published_page_1");
+      .row()
+      .text(
+        product.status === "draft" ? "🚀 انتشار" : "📝 پیش‌نویس",
+        product.status === "draft" ? `publish_${product.id}` : `draft_${product.id}`
+      );
 
     if (product.mainImage) {
       await ctx.replyWithPhoto(product.mainImage, {

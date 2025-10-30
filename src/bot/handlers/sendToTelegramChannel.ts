@@ -8,8 +8,7 @@ export async function sendToTelegramChannel(productId: string, channelKey: strin
 
   if (!product) return console.error("❌ محصول پیدا نشد.");
 
-  await publishProduct(productId);
-  await markAsSent(productId);
+  if (product.status === "draft") await publishProduct(productId);
 
   const formatted = formatProduct(product);
 
@@ -24,5 +23,6 @@ export async function sendToTelegramChannel(productId: string, channelKey: strin
     await sendProductFile({ api: bot.api } as any, formatted.fileUrl, String(formatted.productId), channelKey);
   }
 
+  await markAsSent(productId);
   console.log(`✅ محصول ${productId} به ${channelKey} ارسال شد.`);
 }
