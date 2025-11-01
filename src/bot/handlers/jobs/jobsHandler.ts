@@ -1,8 +1,10 @@
 import { Context, InlineKeyboard } from "grammy";
+import moment from "moment-timezone";
 import { readJobs } from "../../../utils/scheduler";
 
 export async function jobsHandler(ctx: Context) {
   const jobs = await readJobs();
+
   if (!jobs.length) {
     await ctx.reply("❌ هیچ زمان‌بندی فعالی وجود ندارد");
     return;
@@ -12,10 +14,13 @@ export async function jobsHandler(ctx: Context) {
 
   for (const job of jobs) {
     const product = JSON.parse(job.productDetails);
+
     const fullTitle = product.postTitle;
     const shortTitle = fullTitle.split(" ").slice(0, 4).join(" ") + (fullTitle.split(" ").length > 4 ? "..." : "");
 
-    keyboard.text(`${job.time} - ${product.id} - ${shortTitle}`, `show_job_${job.id}`).row();
+    const iranTime = moment(job.sendAt).tz("Asia/Tehran").format("HH:mm");
+
+    keyboard.text(`${iranTime} - ${product.id} - ${shortTitle}`, `show_job_${job.id}`).row();
   }
 
   await ctx.reply("⏰ زمان‌بندی‌های فعالی که ثبت شده‌اند:", {

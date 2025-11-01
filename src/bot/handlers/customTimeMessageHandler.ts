@@ -13,8 +13,8 @@ export async function customTimeMessageHandler(ctx: MyContext) {
 
   const keyboard = new InlineKeyboard().text("❌ لغو", `cancel_custom_time_${productId}`);
 
-  if (!time || !/^([01]?\d|2[0-3]):(00|30)$/.test(time)) {
-    await ctx.reply("⚠️ فقط زمان نیم‌ ساعتی HH:MM مجاز است", {
+  if (!time || !/^([01]\d|2[0-3]):([0-5]\d)$/.test(time)) {
+    await ctx.reply("⚠️ لطفاً زمان را به‌صورت HH:MM وارد کنید (مثلاً 09:15 یا 22:45)", {
       reply_markup: keyboard,
     });
     return;
@@ -22,7 +22,7 @@ export async function customTimeMessageHandler(ctx: MyContext) {
 
   const product = await getProductById(productId);
 
-  addJob({
+  await addJob({
     productId,
     time,
     chatId,
