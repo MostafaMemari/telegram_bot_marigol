@@ -2,7 +2,7 @@ import { JobModel } from "../model/job.model";
 import { sendToTelegramChannel } from "../bot/handlers/sendToTelegramChannel";
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== "POST") {
+  if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({ status: "error", message: "Method not allowed" });
   }
 
@@ -10,7 +10,7 @@ export default async function handler(req: any, res: any) {
     const now = new Date();
     const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
-    console.log(`\n[CRON CHECK] Now: ${now.toISOString()} | 30min ago: ${thirtyMinutesAgo.toISOString()}`);
+    console.log(`[CRON CHECK] Now: ${now.toISOString()} | 30min ago: ${thirtyMinutesAgo.toISOString()}`);
 
     const jobs = await JobModel.find({
       sendAt: { $lte: now, $gt: thirtyMinutesAgo },
