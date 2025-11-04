@@ -33,7 +33,7 @@ export async function productDetailsHandler(ctx: Context) {
       );
 
     if (product.mainImage) {
-      await ctx.replyWithPhoto(product.mainImage, {
+      await ctx.replyWithPhoto(`${product.mainImage}?nocache`, {
         caption: formatted.msg,
         parse_mode: "HTML",
         reply_markup: keyboard,

@@ -16,7 +16,7 @@ export async function draftsHandler(ctx: Context) {
       const msg = `📌 ${p.postTitle}\n 🔑 شناسه محصول : ${p.id}`;
 
       if (p.mainImage) {
-        await ctx.replyWithPhoto(p.mainImage, { caption: msg, parse_mode: "HTML", reply_markup: keyboard });
+        await ctx.replyWithPhoto(`${p.mainImage}?nocache`, { caption: msg, parse_mode: "HTML", reply_markup: keyboard });
       } else {
         await ctx.reply(msg, { parse_mode: "HTML", reply_markup: keyboard });
       }

@@ -21,7 +21,7 @@ export function formatProduct(p: any): FormattedProduct {
 
   return {
     msg,
-    photoUrl: p.mainImage,
+    photoUrl: `${p.mainImage}?nocache`,
     fileUrl: p.fileData?.[1]?.file || undefined,
     productId: Number(p.id),
   };
